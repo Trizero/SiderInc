@@ -2,7 +2,7 @@
   	
   	
   	require_once 'vendor/propel/runtime/lib/Propel.php';
-	Propel::init('build/conf/nomeProgetto-conf.php');
+	Propel::init('build/conf/SiderInc-conf.php');
 	set_include_path('build/classes' . PATH_SEPARATOR . get_include_path());
   	
     
