@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database defaultIdMethod="native" name="SiderInc">
+  <table name="Famiglia">
+    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+    <column name="descrizione" type="LONGVARCHAR"/>
+  </table>
+  <table name="MacroCategoria">
+    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+    <column name="idFamiglia" type="INTEGER" required="true"/>
+    <column name="descrizione" type="LONGVARCHAR"/>
+    <foreign-key foreignTable="Famiglia" name="FamigliaMacroCategoria" onDelete="cascade">
+      <reference local="idFamiglia" foreign="id"/>
+    </foreign-key>
+  </table>
+  <table name="Categoria">
+    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+    <column name="idMacroCategoria" type="INTEGER" required="true"/>
+    <column name="descrizione" type="LONGVARCHAR" />
+    <foreign-key foreignTable="MacroCategoria" name="MacroCategoriaCategoria" onDelete="cascade">
+      <reference local="idMacroCategoria" foreign="id"/>
+    </foreign-key>
+  </table>
+  <table name="Utente">
+    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+    <column name="username" type="CHAR" size="50"/>
+    <column name="password" type="CHAR" size="50"/>
+  </table>
+  <table name="DettaglioUtente">
+    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+    <column name="idUtente" type="INTEGER" required="true"/>
+    <column name="nome" type="CHAR" size="50"/>
+    <column name="cognome" type="CHAR" size="50"/>
+    <column name="ragioneSociale" type="CHAR" size="50"/>
+    <foreign-key foreignTable="Utente" name="UtenteDettaglioUtente" onDelete="cascade">
+      <reference local="idUtente" foreign="id"/>
+    </foreign-key>
+  </table>
+  <table name="LivelloUtente">
+    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+    <column name="idUtente" type="INTEGER" required="true"/>
+    <column name="livello" type="CHAR" size="20"/>
+    <foreign-key foreignTable="Utente" name="UtenteLivelloUtente" onDelete="cascade">
+      <reference local="idUtente" foreign="id"/>
+    </foreign-key>
+  </table>
+  <table name="Inserzione">
+    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+    <column name="idCategoria" type="INTEGER" required="true"/>
+    <column name="data" type="TIMESTAMP"/>
+    <foreign-key foreignTable="Categoria" name="CategoriaInserzione" onDelete="cascade">
+      <reference local="idCategoria" foreign="id"/>
+    </foreign-key>
+  </table>
+</database>
