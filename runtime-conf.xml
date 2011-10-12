@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
   <propel>
-    <datasources default="nomeProgetto">
-      <datasource id="nomeProgetto">
+    <datasources default="SiderInc">
+      <datasource id="SiderInc">
         <adapter>mysql</adapter> <!-- sqlite, mysql, myssql, oracle, or pgsql -->
         <connection>
-          <dsn>mysql:host=localhost;dbname=dbName</dsn>
-          <user>username</user>
-          <password>password</password>
+          <dsn>mysql:host=localhost;dbname=SiderInc</dsn>
+          <user>root</user>
+          <password></password>
         </connection>
       </datasource>
     </datasources>
