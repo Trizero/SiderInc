@@ -6,7 +6,7 @@
 	
 	echo $twig->render('index.twig',
 		array(
-			'projectName' => 'TrizeroBoilerPlate'
+			'projectName' => 'SiderInc'
 		)
 	);
 	
