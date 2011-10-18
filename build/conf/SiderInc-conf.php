@@ -11,7 +11,7 @@ $conf = array (
       array (
         'dsn' => 'mysql:host=localhost;dbname=SiderInc',
         'user' => 'root',
-        'password' => '',
+        'password' => 'root',
       ),
     ),
     'default' => 'SiderInc',
