@@ -43,21 +43,30 @@ class __TwigTemplate_6f5c8abf338553d825704adb2e0aa55f extends Twig_Template
         <img src=\"assets/images/icon.png\"></img>
        </div>
  <div align\"center\" style=\"margin: 0 auto; width: 100%;\">
- Record Trovati ";
+ ";
         // line 28
+        if ($this->getContext($context, 'esito')) {
+            // line 29
+            echo " \t<div>";
+            echo twig_escape_filter($this->env, $this->getContext($context, 'esito'), "html");
+            echo "</div>
+ ";
+        }
+        // line 31
+        echo " Record Trovati ";
         echo twig_escape_filter($this->env, $this->getContext($context, 'numero'), "html");
         echo "
         
         <table>
 
         ";
-        // line 32
+        // line 35
         $context['_parent'] = (array) $context;
-        $context['_seq'] = twig_ensure_traversable($this->getContext($context, 'categorie'));
+        $context['_seq'] = twig_ensure_traversable($this->getContext($context, 'famiglie'));
         foreach ($context['_seq'] as $context['_key'] => $context['famiglia']) {
             echo " 
             ";
-            // line 33
+            // line 36
             echo twig_escape_filter($this->env, $this->getAttribute($this->getContext($context, 'famiglia'), "id", array(), "any", false), "html");
             echo twig_escape_filter($this->env, $this->getAttribute($this->getContext($context, 'famiglia'), "descrizione", array(), "any", false), "html");
             echo "
@@ -66,7 +75,7 @@ class __TwigTemplate_6f5c8abf338553d825704adb2e0aa55f extends Twig_Template
         $_parent = $context['_parent'];
         unset($context['_seq'], $context['_iterated'], $context['_key'], $context['famiglia'], $context['_parent'], $context['loop']);
         $context = array_merge($_parent, array_intersect_key($context, $_parent));
-        // line 34
+        // line 37
         echo "       \t     
             
         </table>

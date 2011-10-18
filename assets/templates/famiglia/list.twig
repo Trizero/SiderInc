@@ -25,11 +25,14 @@
         <img src="assets/images/icon.png"></img>
        </div>
  <div align"center" style="margin: 0 auto; width: 100%;">
+ {% if esito %}
+ 	<div>{{ esito }}</div>
+ {% endif %}
  Record Trovati {{ numero }}
         
         <table>
 
-        {% for famiglia in categorie %} 
+        {% for famiglia in famiglie %} 
             {{ famiglia.id }}{{ famiglia.descrizione }}
         {% endfor %}       	     
             
