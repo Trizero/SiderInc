@@ -472,13 +472,13 @@ abstract class BaseMacrocategoria extends BaseObject  implements Persistent
 			$stmt = $con->prepare($sql);
 			foreach ($modifiedColumns as $identifier => $columnName) {
 				switch ($columnName) {
-					case '`ID`':						
+					case '`ID`':
 						$stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
 						break;
-					case '`IDFAMIGLIA`':						
+					case '`IDFAMIGLIA`':
 						$stmt->bindValue($identifier, $this->idfamiglia, PDO::PARAM_INT);
 						break;
-					case '`DESCRIZIONE`':						
+					case '`DESCRIZIONE`':
 						$stmt->bindValue($identifier, $this->descrizione, PDO::PARAM_STR);
 						break;
 				}

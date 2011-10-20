@@ -122,7 +122,7 @@ abstract class BaseInserzioneQuery extends ModelCriteria
 	{
 		$sql = 'SELECT `ID`, `IDCATEGORIA`, `DATA` FROM `Inserzione` WHERE `ID` = :p0';
 		try {
-			$stmt = $con->prepare($sql);			
+			$stmt = $con->prepare($sql);
 			$stmt->bindValue(':p0', $key, PDO::PARAM_INT);
 			$stmt->execute();
 		} catch (Exception $e) {

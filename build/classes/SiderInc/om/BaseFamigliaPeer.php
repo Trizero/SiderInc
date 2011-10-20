@@ -726,6 +726,9 @@ abstract class BaseFamigliaPeer {
 			}
 		} else {
 
+		if ($obj->isNew() || $obj->isColumnModified(FamigliaPeer::DESCRIZIONE))
+			$columns[FamigliaPeer::DESCRIZIONE] = $obj->getDescrizione();
+
 		}
 
 		return BasePeer::doValidate(FamigliaPeer::DATABASE_NAME, FamigliaPeer::TABLE_NAME, $columns);

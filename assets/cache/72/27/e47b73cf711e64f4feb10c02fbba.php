@@ -16,39 +16,63 @@ class __TwigTemplate_7227e47b73cf711e64f4feb10c02fbba extends Twig_Template
         echo "<!DOCTYPE html>
 <html lang=\"en\">
 <head>
-  <meta charset=\"utf-8\" />
+ <meta charset=\"utf-8\" />
 
-  
-  <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame 
-       Remove this if you use the .htaccess -->
-  <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\" />
+ 
+ <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame 
+ Remove this if you use the .htaccess -->
+ <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\" />
 
-  <title>";
+ <title>";
         // line 11
         echo twig_escape_filter($this->env, $this->getContext($context, 'titolo'), "html");
         echo "</title>
-  <link href=\"assets/css/style.css\" rel=\"stylesheet\" type=\"text/css\" />
-  <meta name=\"description\" content=\"\" />
-  <meta name=\"author\" content=\"Fabio Bosisio\" />
+ <link href=\"assets/css/style.css\" rel=\"stylesheet\" type=\"text/css\" />
+ <meta name=\"description\" content=\"\" />
+ <meta name=\"author\" content=\"Fabio Bosisio\" />
 
-  <meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0\" />
+ <meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0\" />
 
-  <!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
-  <link rel=\"shortcut icon\" href=\"/favicon.ico\" />
-  <link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\" />
+ <!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
+ <link rel=\"shortcut icon\" href=\"/favicon.ico\" />
+ <link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\" />
 </head>
 
 <body>
-    <div align=\"center\" style=\" margin:0 auto; padding-bottom:20px;\">
-        <img src=\"assets/images/icon.png\"></img>
-       </div>
- <div align\"center\" style=\"margin: 0 auto; width: 100%;\">
+ <div align=\"center\" style=\" margin:0 auto; padding-bottom:20px;\">
+ <img src=\"assets/images/icon.png\"></img>
+  </div>
+ <div align=\"center\" style=\"margin: 0 auto; width: 100%;\">
 
 <fieldset>
 \t<legend>
 \t\tInserisci una nuova Famiglia
 \t</legend>
-\t<form method=\"post\">
+\t";
+        // line 33
+        if ($this->getContext($context, 'errors')) {
+            // line 34
+            echo "\t<div>
+    ";
+            // line 35
+            $context['_parent'] = (array) $context;
+            $context['_seq'] = twig_ensure_traversable($this->getContext($context, 'errors'));
+            foreach ($context['_seq'] as $context['_key'] => $context['error']) {
+                // line 36
+                echo "      ";
+                echo twig_escape_filter($this->env, $this->getContext($context, 'error'), "html");
+                echo " <br/>
+    ";
+            }
+            $_parent = $context['_parent'];
+            unset($context['_seq'], $context['_iterated'], $context['_key'], $context['error'], $context['_parent'], $context['loop']);
+            $context = array_merge($_parent, array_intersect_key($context, $_parent));
+            // line 38
+            echo "\t</div>
+\t";
+        }
+        // line 40
+        echo "\t<form method=\"post\">
 \t\t<label for=\"descrizione\">Descrizione Famiglia</label>
 \t\t<input type=\"text\" id=\"descrizione\" name=\"descrizione\" required/>
 \t\t<br/>

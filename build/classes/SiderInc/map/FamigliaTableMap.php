@@ -41,6 +41,8 @@ class FamigliaTableMap extends TableMap
 		$this->addPrimaryKey('ID', 'Id', 'INTEGER', true, null, null);
 		$this->addColumn('DESCRIZIONE', 'Descrizione', 'LONGVARCHAR', false, null, null);
 		// validators
+		$this->addValidator('DESCRIZIONE', 'unique', 'propel.validator.UniqueValidator', '', 'Hai già inserito questa Descrizione!');
+		$this->addValidator('DESCRIZIONE', 'required', 'propel.validator.RequiredValidator', '', 'Devi inserire una Descrizione valida!');
 	} // initialize()
 
 	/**
