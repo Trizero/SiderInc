@@ -6,8 +6,8 @@
         <adapter>mysql</adapter> <!-- sqlite, mysql, myssql, oracle, or pgsql -->
         <connection>
           <dsn>mysql:host=localhost;dbname=SiderInc</dsn>
-          <user>root</user>
-          <password></password>
+          <user>sider</user>
+          <password>sider</password>
         </connection>
       </datasource>
     </datasources>

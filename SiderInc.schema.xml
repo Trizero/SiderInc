@@ -4,8 +4,8 @@
     <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
     <column name="descrizione" type="LONGVARCHAR"/>
     <validator column="descrizione">
-    	<rule name="unique" message="Hai già inserito questa Descrizione!"/>
-    	<rule name="require" message="Devi inserire una Descrizione valida!"/>
+      <rule name="unique" message="Hai già inserito questa Descrizione!"/>
+      <rule name="required" message="Devi inserire una Descrizione valida!"/>
     </validator>
   </table>
   <table name="MacroCategoria">

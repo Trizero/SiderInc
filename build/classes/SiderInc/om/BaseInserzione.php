@@ -472,13 +472,13 @@ abstract class BaseInserzione extends BaseObject  implements Persistent
 			$stmt = $con->prepare($sql);
 			foreach ($modifiedColumns as $identifier => $columnName) {
 				switch ($columnName) {
-					case '`ID`':						
+					case '`ID`':
 						$stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
 						break;
-					case '`IDCATEGORIA`':						
+					case '`IDCATEGORIA`':
 						$stmt->bindValue($identifier, $this->idcategoria, PDO::PARAM_INT);
 						break;
-					case '`DATA`':						
+					case '`DATA`':
 						$stmt->bindValue($identifier, $this->data, PDO::PARAM_STR);
 						break;
 				}

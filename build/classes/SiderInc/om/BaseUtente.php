@@ -477,13 +477,13 @@ abstract class BaseUtente extends BaseObject  implements Persistent
 			$stmt = $con->prepare($sql);
 			foreach ($modifiedColumns as $identifier => $columnName) {
 				switch ($columnName) {
-					case '`ID`':						
+					case '`ID`':
 						$stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
 						break;
-					case '`USERNAME`':						
+					case '`USERNAME`':
 						$stmt->bindValue($identifier, $this->username, PDO::PARAM_STR);
 						break;
-					case '`PASSWORD`':						
+					case '`PASSWORD`':
 						$stmt->bindValue($identifier, $this->password, PDO::PARAM_STR);
 						break;
 				}
