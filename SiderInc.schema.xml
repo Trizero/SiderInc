@@ -24,6 +24,10 @@
     <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
     <column name="username" type="CHAR" size="50"/>
     <column name="password" type="CHAR" size="50"/>
+    <column name="livello" type="INTEGER" size="50"/>
+    <foreign-key foreignTable="LivelloUtente" name="UtenteLivelloUtente" onDelete="cascade">
+      <reference local="livello" foreign="id"/>
+    </foreign-key>
   </table>
   <table name="DettaglioUtente">
     <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
@@ -37,11 +41,7 @@
   </table>
   <table name="LivelloUtente">
     <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
-    <column name="idUtente" type="INTEGER" required="true"/>
     <column name="livello" type="CHAR" size="20"/>
-    <foreign-key foreignTable="Utente" name="UtenteLivelloUtente" onDelete="cascade">
-      <reference local="idUtente" foreign="id"/>
-    </foreign-key>
   </table>
   <table name="Inserzione">
     <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>

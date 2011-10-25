@@ -14,5 +14,15 @@
  * @package    propel.generator.SiderInc
  */
 class Utente extends BaseUtente {
+	
+	public function isAdmin()
+	{
+		if($this->getLivello() == 1){
+			return TRUE;
+		}
+		else{
+			return FALSE;
+		}
+	}
 
 } // Utente

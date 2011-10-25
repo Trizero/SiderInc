@@ -26,19 +26,16 @@ abstract class BaseLivelloutentePeer {
 	const TM_CLASS = 'LivelloutenteTableMap';
 
 	/** The total number of columns. */
-	const NUM_COLUMNS = 3;
+	const NUM_COLUMNS = 2;
 
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
 
 	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
-	const NUM_HYDRATE_COLUMNS = 3;
+	const NUM_HYDRATE_COLUMNS = 2;
 
 	/** the column name for the ID field */
 	const ID = 'LivelloUtente.ID';
-
-	/** the column name for the IDUTENTE field */
-	const IDUTENTE = 'LivelloUtente.IDUTENTE';
 
 	/** the column name for the LIVELLO field */
 	const LIVELLO = 'LivelloUtente.LIVELLO';
@@ -62,12 +59,12 @@ abstract class BaseLivelloutentePeer {
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
 	protected static $fieldNames = array (
-		BasePeer::TYPE_PHPNAME => array ('Id', 'Idutente', 'Livello', ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'idutente', 'livello', ),
-		BasePeer::TYPE_COLNAME => array (self::ID, self::IDUTENTE, self::LIVELLO, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'IDUTENTE', 'LIVELLO', ),
-		BasePeer::TYPE_FIELDNAME => array ('id', 'idUtente', 'livello', ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, )
+		BasePeer::TYPE_PHPNAME => array ('Id', 'Livello', ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'livello', ),
+		BasePeer::TYPE_COLNAME => array (self::ID, self::LIVELLO, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'LIVELLO', ),
+		BasePeer::TYPE_FIELDNAME => array ('id', 'livello', ),
+		BasePeer::TYPE_NUM => array (0, 1, )
 	);
 
 	/**
@@ -77,12 +74,12 @@ abstract class BaseLivelloutentePeer {
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
 	protected static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Idutente' => 1, 'Livello' => 2, ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'idutente' => 1, 'livello' => 2, ),
-		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::IDUTENTE => 1, self::LIVELLO => 2, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'IDUTENTE' => 1, 'LIVELLO' => 2, ),
-		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'idUtente' => 1, 'livello' => 2, ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, )
+		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Livello' => 1, ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'livello' => 1, ),
+		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::LIVELLO => 1, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'LIVELLO' => 1, ),
+		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'livello' => 1, ),
+		BasePeer::TYPE_NUM => array (0, 1, )
 	);
 
 	/**
@@ -155,11 +152,9 @@ abstract class BaseLivelloutentePeer {
 	{
 		if (null === $alias) {
 			$criteria->addSelectColumn(LivelloutentePeer::ID);
-			$criteria->addSelectColumn(LivelloutentePeer::IDUTENTE);
 			$criteria->addSelectColumn(LivelloutentePeer::LIVELLO);
 		} else {
 			$criteria->addSelectColumn($alias . '.ID');
-			$criteria->addSelectColumn($alias . '.IDUTENTE');
 			$criteria->addSelectColumn($alias . '.LIVELLO');
 		}
 	}
@@ -354,6 +349,9 @@ abstract class BaseLivelloutentePeer {
 	 */
 	public static function clearRelatedInstancePool()
 	{
+		// Invalidate objects in UtentePeer instance pool,
+		// since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
+		UtentePeer::clearInstancePool();
 	}
 
 	/**
@@ -444,240 +442,6 @@ abstract class BaseLivelloutentePeer {
 			LivelloutentePeer::addInstanceToPool($obj, $key);
 		}
 		return array($obj, $col);
-	}
-
-
-	/**
-	 * Returns the number of rows matching criteria, joining the related Utente table
-	 *
-	 * @param      Criteria $criteria
-	 * @param      boolean $distinct Whether to select only distinct columns; deprecated: use Criteria->setDistinct() instead.
-	 * @param      PropelPDO $con
-	 * @param      String    $join_behavior the type of joins to use, defaults to Criteria::LEFT_JOIN
-	 * @return     int Number of matching rows.
-	 */
-	public static function doCountJoinUtente(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
-	{
-		// we're going to modify criteria, so copy it first
-		$criteria = clone $criteria;
-
-		// We need to set the primary table name, since in the case that there are no WHERE columns
-		// it will be impossible for the BasePeer::createSelectSql() method to determine which
-		// tables go into the FROM clause.
-		$criteria->setPrimaryTableName(LivelloutentePeer::TABLE_NAME);
-
-		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
-			$criteria->setDistinct();
-		}
-
-		if (!$criteria->hasSelectClause()) {
-			LivelloutentePeer::addSelectColumns($criteria);
-		}
-
-		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
-
-		// Set the correct dbName
-		$criteria->setDbName(self::DATABASE_NAME);
-
-		if ($con === null) {
-			$con = Propel::getConnection(LivelloutentePeer::DATABASE_NAME, Propel::CONNECTION_READ);
-		}
-
-		$criteria->addJoin(LivelloutentePeer::IDUTENTE, UtentePeer::ID, $join_behavior);
-
-		$stmt = BasePeer::doCount($criteria, $con);
-
-		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
-			$count = (int) $row[0];
-		} else {
-			$count = 0; // no rows returned; we infer that means 0 matches.
-		}
-		$stmt->closeCursor();
-		return $count;
-	}
-
-
-	/**
-	 * Selects a collection of Livelloutente objects pre-filled with their Utente objects.
-	 * @param      Criteria  $criteria
-	 * @param      PropelPDO $con
-	 * @param      String    $join_behavior the type of joins to use, defaults to Criteria::LEFT_JOIN
-	 * @return     array Array of Livelloutente objects.
-	 * @throws     PropelException Any exceptions caught during processing will be
-	 *		 rethrown wrapped into a PropelException.
-	 */
-	public static function doSelectJoinUtente(Criteria $criteria, $con = null, $join_behavior = Criteria::LEFT_JOIN)
-	{
-		$criteria = clone $criteria;
-
-		// Set the correct dbName if it has not been overridden
-		if ($criteria->getDbName() == Propel::getDefaultDB()) {
-			$criteria->setDbName(self::DATABASE_NAME);
-		}
-
-		LivelloutentePeer::addSelectColumns($criteria);
-		$startcol = LivelloutentePeer::NUM_HYDRATE_COLUMNS;
-		UtentePeer::addSelectColumns($criteria);
-
-		$criteria->addJoin(LivelloutentePeer::IDUTENTE, UtentePeer::ID, $join_behavior);
-
-		$stmt = BasePeer::doSelect($criteria, $con);
-		$results = array();
-
-		while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
-			$key1 = LivelloutentePeer::getPrimaryKeyHashFromRow($row, 0);
-			if (null !== ($obj1 = LivelloutentePeer::getInstanceFromPool($key1))) {
-				// We no longer rehydrate the object, since this can cause data loss.
-				// See http://www.propelorm.org/ticket/509
-				// $obj1->hydrate($row, 0, true); // rehydrate
-			} else {
-
-				$cls = LivelloutentePeer::getOMClass(false);
-
-				$obj1 = new $cls();
-				$obj1->hydrate($row);
-				LivelloutentePeer::addInstanceToPool($obj1, $key1);
-			} // if $obj1 already loaded
-
-			$key2 = UtentePeer::getPrimaryKeyHashFromRow($row, $startcol);
-			if ($key2 !== null) {
-				$obj2 = UtentePeer::getInstanceFromPool($key2);
-				if (!$obj2) {
-
-					$cls = UtentePeer::getOMClass(false);
-
-					$obj2 = new $cls();
-					$obj2->hydrate($row, $startcol);
-					UtentePeer::addInstanceToPool($obj2, $key2);
-				} // if obj2 already loaded
-
-				// Add the $obj1 (Livelloutente) to $obj2 (Utente)
-				$obj2->addLivelloutente($obj1);
-
-			} // if joined row was not null
-
-			$results[] = $obj1;
-		}
-		$stmt->closeCursor();
-		return $results;
-	}
-
-
-	/**
-	 * Returns the number of rows matching criteria, joining all related tables
-	 *
-	 * @param      Criteria $criteria
-	 * @param      boolean $distinct Whether to select only distinct columns; deprecated: use Criteria->setDistinct() instead.
-	 * @param      PropelPDO $con
-	 * @param      String    $join_behavior the type of joins to use, defaults to Criteria::LEFT_JOIN
-	 * @return     int Number of matching rows.
-	 */
-	public static function doCountJoinAll(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
-	{
-		// we're going to modify criteria, so copy it first
-		$criteria = clone $criteria;
-
-		// We need to set the primary table name, since in the case that there are no WHERE columns
-		// it will be impossible for the BasePeer::createSelectSql() method to determine which
-		// tables go into the FROM clause.
-		$criteria->setPrimaryTableName(LivelloutentePeer::TABLE_NAME);
-
-		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
-			$criteria->setDistinct();
-		}
-
-		if (!$criteria->hasSelectClause()) {
-			LivelloutentePeer::addSelectColumns($criteria);
-		}
-
-		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
-
-		// Set the correct dbName
-		$criteria->setDbName(self::DATABASE_NAME);
-
-		if ($con === null) {
-			$con = Propel::getConnection(LivelloutentePeer::DATABASE_NAME, Propel::CONNECTION_READ);
-		}
-
-		$criteria->addJoin(LivelloutentePeer::IDUTENTE, UtentePeer::ID, $join_behavior);
-
-		$stmt = BasePeer::doCount($criteria, $con);
-
-		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
-			$count = (int) $row[0];
-		} else {
-			$count = 0; // no rows returned; we infer that means 0 matches.
-		}
-		$stmt->closeCursor();
-		return $count;
-	}
-
-	/**
-	 * Selects a collection of Livelloutente objects pre-filled with all related objects.
-	 *
-	 * @param      Criteria  $criteria
-	 * @param      PropelPDO $con
-	 * @param      String    $join_behavior the type of joins to use, defaults to Criteria::LEFT_JOIN
-	 * @return     array Array of Livelloutente objects.
-	 * @throws     PropelException Any exceptions caught during processing will be
-	 *		 rethrown wrapped into a PropelException.
-	 */
-	public static function doSelectJoinAll(Criteria $criteria, $con = null, $join_behavior = Criteria::LEFT_JOIN)
-	{
-		$criteria = clone $criteria;
-
-		// Set the correct dbName if it has not been overridden
-		if ($criteria->getDbName() == Propel::getDefaultDB()) {
-			$criteria->setDbName(self::DATABASE_NAME);
-		}
-
-		LivelloutentePeer::addSelectColumns($criteria);
-		$startcol2 = LivelloutentePeer::NUM_HYDRATE_COLUMNS;
-
-		UtentePeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + UtentePeer::NUM_HYDRATE_COLUMNS;
-
-		$criteria->addJoin(LivelloutentePeer::IDUTENTE, UtentePeer::ID, $join_behavior);
-
-		$stmt = BasePeer::doSelect($criteria, $con);
-		$results = array();
-
-		while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
-			$key1 = LivelloutentePeer::getPrimaryKeyHashFromRow($row, 0);
-			if (null !== ($obj1 = LivelloutentePeer::getInstanceFromPool($key1))) {
-				// We no longer rehydrate the object, since this can cause data loss.
-				// See http://www.propelorm.org/ticket/509
-				// $obj1->hydrate($row, 0, true); // rehydrate
-			} else {
-				$cls = LivelloutentePeer::getOMClass(false);
-
-				$obj1 = new $cls();
-				$obj1->hydrate($row);
-				LivelloutentePeer::addInstanceToPool($obj1, $key1);
-			} // if obj1 already loaded
-
-			// Add objects for joined Utente rows
-
-			$key2 = UtentePeer::getPrimaryKeyHashFromRow($row, $startcol2);
-			if ($key2 !== null) {
-				$obj2 = UtentePeer::getInstanceFromPool($key2);
-				if (!$obj2) {
-
-					$cls = UtentePeer::getOMClass(false);
-
-					$obj2 = new $cls();
-					$obj2->hydrate($row, $startcol2);
-					UtentePeer::addInstanceToPool($obj2, $key2);
-				} // if obj2 loaded
-
-				// Add the $obj1 (Livelloutente) to the collection in $obj2 (Utente)
-				$obj2->addLivelloutente($obj1);
-			} // if joined row not null
-
-			$results[] = $obj1;
-		}
-		$stmt->closeCursor();
-		return $results;
 	}
 
 	/**
@@ -818,6 +582,7 @@ abstract class BaseLivelloutentePeer {
 			// use transaction because $criteria could contain info
 			// for more than one table or we could emulating ON DELETE CASCADE, etc.
 			$con->beginTransaction();
+			$affectedRows += LivelloutentePeer::doOnDeleteCascade(new Criteria(LivelloutentePeer::DATABASE_NAME), $con);
 			$affectedRows += BasePeer::doDeleteAll(LivelloutentePeer::TABLE_NAME, $con, LivelloutentePeer::DATABASE_NAME);
 			// Because this db requires some delete cascade/set null emulation, we have to
 			// clear the cached instance *after* the emulation has happened (since
@@ -850,24 +615,14 @@ abstract class BaseLivelloutentePeer {
 		}
 
 		if ($values instanceof Criteria) {
-			// invalidate the cache for all objects of this type, since we have no
-			// way of knowing (without running a query) what objects should be invalidated
-			// from the cache based on this Criteria.
-			LivelloutentePeer::clearInstancePool();
 			// rename for clarity
 			$criteria = clone $values;
 		} elseif ($values instanceof Livelloutente) { // it's a model object
-			// invalidate the cache for this single object
-			LivelloutentePeer::removeInstanceFromPool($values);
 			// create criteria based on pk values
 			$criteria = $values->buildPkeyCriteria();
 		} else { // it's a primary key, or an array of pks
 			$criteria = new Criteria(self::DATABASE_NAME);
 			$criteria->add(LivelloutentePeer::ID, (array) $values, Criteria::IN);
-			// invalidate the cache for this object(s)
-			foreach ((array) $values as $singleval) {
-				LivelloutentePeer::removeInstanceFromPool($singleval);
-			}
 		}
 
 		// Set the correct dbName
@@ -880,6 +635,23 @@ abstract class BaseLivelloutentePeer {
 			// for more than one table or we could emulating ON DELETE CASCADE, etc.
 			$con->beginTransaction();
 			
+			// cloning the Criteria in case it's modified by doSelect() or doSelectStmt()
+			$c = clone $criteria;
+			$affectedRows += LivelloutentePeer::doOnDeleteCascade($c, $con);
+			
+			// Because this db requires some delete cascade/set null emulation, we have to
+			// clear the cached instance *after* the emulation has happened (since
+			// instances get re-added by the select statement contained therein).
+			if ($values instanceof Criteria) {
+				LivelloutentePeer::clearInstancePool();
+			} elseif ($values instanceof Livelloutente) { // it's a model object
+				LivelloutentePeer::removeInstanceFromPool($values);
+			} else { // it's a primary key, or an array of pks
+				foreach ((array) $values as $singleval) {
+					LivelloutentePeer::removeInstanceFromPool($singleval);
+				}
+			}
+			
 			$affectedRows += BasePeer::doDelete($criteria, $con);
 			LivelloutentePeer::clearRelatedInstancePool();
 			$con->commit();
@@ -888,6 +660,38 @@ abstract class BaseLivelloutentePeer {
 			$con->rollBack();
 			throw $e;
 		}
+	}
+
+	/**
+	 * This is a method for emulating ON DELETE CASCADE for DBs that don't support this
+	 * feature (like MySQL or SQLite).
+	 *
+	 * This method is not very speedy because it must perform a query first to get
+	 * the implicated records and then perform the deletes by calling those Peer classes.
+	 *
+	 * This method should be used within a transaction if possible.
+	 *
+	 * @param      Criteria $criteria
+	 * @param      PropelPDO $con
+	 * @return     int The number of affected rows (if supported by underlying database driver).
+	 */
+	protected static function doOnDeleteCascade(Criteria $criteria, PropelPDO $con)
+	{
+		// initialize var to track total num of affected rows
+		$affectedRows = 0;
+
+		// first find the objects that are implicated by the $criteria
+		$objects = LivelloutentePeer::doSelect($criteria, $con);
+		foreach ($objects as $obj) {
+
+
+			// delete related Utente objects
+			$criteria = new Criteria(UtentePeer::DATABASE_NAME);
+			
+			$criteria->add(UtentePeer::LIVELLO, $obj->getId());
+			$affectedRows += UtentePeer::doDelete($criteria, $con);
+		}
+		return $affectedRows;
 	}
 
 	/**
