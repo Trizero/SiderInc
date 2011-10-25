@@ -16,71 +16,87 @@ class __TwigTemplate_6f5c8abf338553d825704adb2e0aa55f extends Twig_Template
         echo "<!DOCTYPE html>
 <html lang=\"en\">
 <head>
-  <meta charset=\"utf-8\" />
+\t<meta charset=\"utf-8\" />
 
-  
-  <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame 
-       Remove this if you use the .htaccess -->
-  <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\" />
+  \t<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame Remove this if you use the .htaccess -->
+  \t<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\" />
 
-  <title>";
-        // line 11
+  \t<title>";
+        // line 9
         echo twig_escape_filter($this->env, $this->getContext($context, 'titolo'), "html");
         echo "</title>
-  <link href=\"assets/css/style.css\" rel=\"stylesheet\" type=\"text/css\" />
-  <meta name=\"description\" content=\"\" />
-  <meta name=\"author\" content=\"Fabio Bosisio\" />
+  \t<link href=\"assets/css/style.css\" rel=\"stylesheet\" type=\"text/css\" />
+  \t<meta name=\"description\" content=\"\" />
+  \t<meta name=\"author\" content=\"Fabio Bosisio\" />
 
-  <meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0\" />
+  \t<meta name=\"viewport\" content=\"width=device-width; initial-scale=1.0\" />
 
-  <!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
-  <link rel=\"shortcut icon\" href=\"/favicon.ico\" />
-  <link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\" />
+  \t<!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
+  \t<link rel=\"shortcut icon\" href=\"/favicon.ico\" />
+\t<link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\" />
 </head>
 
 <body>
-    <div align=\"center\" style=\" margin:0 auto; padding-bottom:20px;\">
-        <img src=\"assets/images/icon.png\"></img>
-       </div>
- <div align\"center\" style=\"margin: 0 auto; width: 100%;\">
- ";
-        // line 28
+
+<div align=\"center\" style=\" margin:0 auto; padding-bottom:20px;\">
+\t<img src=\"assets/images/icon.png\"></img>
+</div>
+
+";
+        // line 27
         if ($this->getContext($context, 'esito')) {
-            // line 29
+            // line 28
             echo " \t<div>";
             echo twig_escape_filter($this->env, $this->getContext($context, 'esito'), "html");
             echo "</div>
- ";
+";
         }
-        // line 31
-        echo " Record Trovati ";
+        // line 30
+        echo "
+<div align\"center\" style=\"margin: 0 auto; width: 100%;\">
+
+\tRecord Trovati ";
+        // line 33
         echo twig_escape_filter($this->env, $this->getContext($context, 'numero'), "html");
         echo "
         
-        <table>
-
-        ";
-        // line 35
+    <table>
+  \t\t<tr>
+    \t\t<th>ID</th>
+    \t\t<th>Descrizione</th>
+  \t\t</tr>
+\t\t";
+        // line 40
         $context['_parent'] = (array) $context;
         $context['_seq'] = twig_ensure_traversable($this->getContext($context, 'famiglie'));
         foreach ($context['_seq'] as $context['_key'] => $context['famiglia']) {
             echo " 
-            ";
-            // line 36
+  \t\t<tr>
+    \t\t<td>";
+            // line 42
             echo twig_escape_filter($this->env, $this->getAttribute($this->getContext($context, 'famiglia'), "id", array(), "any", false), "html");
+            echo "</td>
+    \t\t<td>";
+            // line 43
             echo twig_escape_filter($this->env, $this->getAttribute($this->getContext($context, 'famiglia'), "descrizione", array(), "any", false), "html");
-            echo "
-        ";
+            echo "</td>
+  \t\t</tr>
+  \t\t";
         }
         $_parent = $context['_parent'];
         unset($context['_seq'], $context['_iterated'], $context['_key'], $context['famiglia'], $context['_parent'], $context['loop']);
         $context = array_merge($_parent, array_intersect_key($context, $_parent));
-        // line 37
-        echo "       \t     
-            
-        </table>
- </div>
+        // line 46
+        echo "\t</table>
+
+</div>
+ 
+<div>
+\t<a href=\"index.php\">Home Page</a> - <a href=\"add_famiglia.php\">Crea Famiglia</a> 
+</div>
+ 
 </body>
+
 </html>";
     }
 
