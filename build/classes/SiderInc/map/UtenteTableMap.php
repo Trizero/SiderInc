@@ -41,6 +41,7 @@ class UtenteTableMap extends TableMap
 		$this->addPrimaryKey('ID', 'Id', 'INTEGER', true, null, null);
 		$this->addColumn('USERNAME', 'Username', 'CHAR', false, 50, null);
 		$this->addColumn('PASSWORD', 'Password', 'CHAR', false, 50, null);
+		$this->addForeignKey('LIVELLO', 'Livello', 'INTEGER', 'LivelloUtente', 'ID', false, 50, null);
 		// validators
 	} // initialize()
 
@@ -49,8 +50,8 @@ class UtenteTableMap extends TableMap
 	 */
 	public function buildRelations()
 	{
+		$this->addRelation('Livelloutente', 'Livelloutente', RelationMap::MANY_TO_ONE, array('livello' => 'id', ), 'CASCADE', null);
 		$this->addRelation('Dettaglioutente', 'Dettaglioutente', RelationMap::ONE_TO_MANY, array('id' => 'idUtente', ), 'CASCADE', null, 'Dettaglioutentes');
-		$this->addRelation('Livelloutente', 'Livelloutente', RelationMap::ONE_TO_MANY, array('id' => 'idUtente', ), 'CASCADE', null, 'Livelloutentes');
 	} // buildRelations()
 
 } // UtenteTableMap
