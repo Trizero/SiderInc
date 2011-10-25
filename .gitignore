@@ -1,1 +1,3 @@
 .project
+assets/cache
+build/conf/SiderInc-conf.php
