@@ -39,7 +39,6 @@ class LivelloutenteTableMap extends TableMap
 		$this->setUseIdGenerator(true);
 		// columns
 		$this->addPrimaryKey('ID', 'Id', 'INTEGER', true, null, null);
-		$this->addForeignKey('IDUTENTE', 'Idutente', 'INTEGER', 'Utente', 'ID', true, null, null);
 		$this->addColumn('LIVELLO', 'Livello', 'CHAR', false, 20, null);
 		// validators
 	} // initialize()
@@ -49,7 +48,7 @@ class LivelloutenteTableMap extends TableMap
 	 */
 	public function buildRelations()
 	{
-		$this->addRelation('Utente', 'Utente', RelationMap::MANY_TO_ONE, array('idUtente' => 'id', ), 'CASCADE', null);
+		$this->addRelation('Utente', 'Utente', RelationMap::ONE_TO_MANY, array('id' => 'livello', ), 'CASCADE', null, 'Utentes');
 	} // buildRelations()
 
 } // LivelloutenteTableMap

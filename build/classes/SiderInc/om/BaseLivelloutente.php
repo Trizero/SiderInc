@@ -31,21 +31,15 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 	protected $id;
 
 	/**
-	 * The value for the idutente field.
-	 * @var        int
-	 */
-	protected $idutente;
-
-	/**
 	 * The value for the livello field.
 	 * @var        string
 	 */
 	protected $livello;
 
 	/**
-	 * @var        Utente
+	 * @var        array Utente[] Collection to store aggregation of Utente objects.
 	 */
-	protected $aUtente;
+	protected $collUtentes;
 
 	/**
 	 * Flag to prevent endless save loop, if this object is referenced
@@ -62,6 +56,12 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 	protected $alreadyInValidation = false;
 
 	/**
+	 * An array of objects scheduled for deletion.
+	 * @var		array
+	 */
+	protected $utentesScheduledForDeletion = null;
+
+	/**
 	 * Get the [id] column value.
 	 * 
 	 * @return     int
@@ -69,16 +69,6 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 	public function getId()
 	{
 		return $this->id;
-	}
-
-	/**
-	 * Get the [idutente] column value.
-	 * 
-	 * @return     int
-	 */
-	public function getIdutente()
-	{
-		return $this->idutente;
 	}
 
 	/**
@@ -110,30 +100,6 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 
 		return $this;
 	} // setId()
-
-	/**
-	 * Set the value of [idutente] column.
-	 * 
-	 * @param      int $v new value
-	 * @return     Livelloutente The current object (for fluent API support)
-	 */
-	public function setIdutente($v)
-	{
-		if ($v !== null) {
-			$v = (int) $v;
-		}
-
-		if ($this->idutente !== $v) {
-			$this->idutente = $v;
-			$this->modifiedColumns[] = LivelloutentePeer::IDUTENTE;
-		}
-
-		if ($this->aUtente !== null && $this->aUtente->getId() !== $v) {
-			$this->aUtente = null;
-		}
-
-		return $this;
-	} // setIdutente()
 
 	/**
 	 * Set the value of [livello] column.
@@ -188,8 +154,7 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 		try {
 
 			$this->id = ($row[$startcol + 0] !== null) ? (int) $row[$startcol + 0] : null;
-			$this->idutente = ($row[$startcol + 1] !== null) ? (int) $row[$startcol + 1] : null;
-			$this->livello = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
+			$this->livello = ($row[$startcol + 1] !== null) ? (string) $row[$startcol + 1] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
@@ -198,7 +163,7 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 				$this->ensureConsistency();
 			}
 
-			return $startcol + 3; // 3 = LivelloutentePeer::NUM_HYDRATE_COLUMNS.
+			return $startcol + 2; // 2 = LivelloutentePeer::NUM_HYDRATE_COLUMNS.
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating Livelloutente object", $e);
@@ -221,9 +186,6 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 	public function ensureConsistency()
 	{
 
-		if ($this->aUtente !== null && $this->idutente !== $this->aUtente->getId()) {
-			$this->aUtente = null;
-		}
 	} // ensureConsistency
 
 	/**
@@ -263,7 +225,8 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 
 		if ($deep) {  // also de-associate any related objects?
 
-			$this->aUtente = null;
+			$this->collUtentes = null;
+
 		} // if (deep)
 	}
 
@@ -374,18 +337,6 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 		if (!$this->alreadyInSave) {
 			$this->alreadyInSave = true;
 
-			// We call the save method on the following object(s) if they
-			// were passed to this object by their coresponding set
-			// method.  This object relates to these object(s) by a
-			// foreign key reference.
-
-			if ($this->aUtente !== null) {
-				if ($this->aUtente->isModified() || $this->aUtente->isNew()) {
-					$affectedRows += $this->aUtente->save($con);
-				}
-				$this->setUtente($this->aUtente);
-			}
-
 			if ($this->isNew() || $this->isModified()) {
 				// persist changes
 				if ($this->isNew()) {
@@ -395,6 +346,23 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 				}
 				$affectedRows += 1;
 				$this->resetModified();
+			}
+
+			if ($this->utentesScheduledForDeletion !== null) {
+				if (!$this->utentesScheduledForDeletion->isEmpty()) {
+					UtenteQuery::create()
+						->filterByPrimaryKeys($this->utentesScheduledForDeletion->getPrimaryKeys(false))
+						->delete($con);
+					$this->utentesScheduledForDeletion = null;
+				}
+			}
+
+			if ($this->collUtentes !== null) {
+				foreach ($this->collUtentes as $referrerFK) {
+					if (!$referrerFK->isDeleted()) {
+						$affectedRows += $referrerFK->save($con);
+					}
+				}
 			}
 
 			$this->alreadyInSave = false;
@@ -425,9 +393,6 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 		if ($this->isColumnModified(LivelloutentePeer::ID)) {
 			$modifiedColumns[':p' . $index++]  = '`ID`';
 		}
-		if ($this->isColumnModified(LivelloutentePeer::IDUTENTE)) {
-			$modifiedColumns[':p' . $index++]  = '`IDUTENTE`';
-		}
 		if ($this->isColumnModified(LivelloutentePeer::LIVELLO)) {
 			$modifiedColumns[':p' . $index++]  = '`LIVELLO`';
 		}
@@ -444,9 +409,6 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 				switch ($columnName) {
 					case '`ID`':						
 						$stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
-						break;
-					case '`IDUTENTE`':						
-						$stmt->bindValue($identifier, $this->idutente, PDO::PARAM_INT);
 						break;
 					case '`LIVELLO`':						
 						$stmt->bindValue($identifier, $this->livello, PDO::PARAM_STR);
@@ -543,22 +505,18 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 			$failureMap = array();
 
 
-			// We call the validate method on the following object(s) if they
-			// were passed to this object by their coresponding set
-			// method.  This object relates to these object(s) by a
-			// foreign key reference.
-
-			if ($this->aUtente !== null) {
-				if (!$this->aUtente->validate($columns)) {
-					$failureMap = array_merge($failureMap, $this->aUtente->getValidationFailures());
-				}
-			}
-
-
 			if (($retval = LivelloutentePeer::doValidate($this, $columns)) !== true) {
 				$failureMap = array_merge($failureMap, $retval);
 			}
 
+
+				if ($this->collUtentes !== null) {
+					foreach ($this->collUtentes as $referrerFK) {
+						if (!$referrerFK->validate($columns)) {
+							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+						}
+					}
+				}
 
 
 			$this->alreadyInValidation = false;
@@ -597,9 +555,6 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 				return $this->getId();
 				break;
 			case 1:
-				return $this->getIdutente();
-				break;
-			case 2:
 				return $this->getLivello();
 				break;
 			default:
@@ -632,12 +587,11 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 		$keys = LivelloutentePeer::getFieldNames($keyType);
 		$result = array(
 			$keys[0] => $this->getId(),
-			$keys[1] => $this->getIdutente(),
-			$keys[2] => $this->getLivello(),
+			$keys[1] => $this->getLivello(),
 		);
 		if ($includeForeignObjects) {
-			if (null !== $this->aUtente) {
-				$result['Utente'] = $this->aUtente->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+			if (null !== $this->collUtentes) {
+				$result['Utentes'] = $this->collUtentes->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
 			}
 		}
 		return $result;
@@ -674,9 +628,6 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 				$this->setId($value);
 				break;
 			case 1:
-				$this->setIdutente($value);
-				break;
-			case 2:
 				$this->setLivello($value);
 				break;
 		} // switch()
@@ -704,8 +655,7 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 		$keys = LivelloutentePeer::getFieldNames($keyType);
 
 		if (array_key_exists($keys[0], $arr)) $this->setId($arr[$keys[0]]);
-		if (array_key_exists($keys[1], $arr)) $this->setIdutente($arr[$keys[1]]);
-		if (array_key_exists($keys[2], $arr)) $this->setLivello($arr[$keys[2]]);
+		if (array_key_exists($keys[1], $arr)) $this->setLivello($arr[$keys[1]]);
 	}
 
 	/**
@@ -718,7 +668,6 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 		$criteria = new Criteria(LivelloutentePeer::DATABASE_NAME);
 
 		if ($this->isColumnModified(LivelloutentePeer::ID)) $criteria->add(LivelloutentePeer::ID, $this->id);
-		if ($this->isColumnModified(LivelloutentePeer::IDUTENTE)) $criteria->add(LivelloutentePeer::IDUTENTE, $this->idutente);
 		if ($this->isColumnModified(LivelloutentePeer::LIVELLO)) $criteria->add(LivelloutentePeer::LIVELLO, $this->livello);
 
 		return $criteria;
@@ -782,8 +731,21 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 	 */
 	public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
 	{
-		$copyObj->setIdutente($this->getIdutente());
 		$copyObj->setLivello($this->getLivello());
+
+		if ($deepCopy) {
+			// important: temporarily setNew(false) because this affects the behavior of
+			// the getter/setter methods for fkey referrer objects.
+			$copyObj->setNew(false);
+
+			foreach ($this->getUtentes() as $relObj) {
+				if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+					$copyObj->addUtente($relObj->copy($deepCopy));
+				}
+			}
+
+		} // if ($deepCopy)
+
 		if ($makeNew) {
 			$copyObj->setNew(true);
 			$copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -828,53 +790,168 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 		return self::$peer;
 	}
 
+
 	/**
-	 * Declares an association between this object and a Utente object.
+	 * Initializes a collection based on the name of a relation.
+	 * Avoids crafting an 'init[$relationName]s' method name
+	 * that wouldn't work when StandardEnglishPluralizer is used.
 	 *
-	 * @param      Utente $v
-	 * @return     Livelloutente The current object (for fluent API support)
+	 * @param      string $relationName The name of the relation to initialize
+	 * @return     void
+	 */
+	public function initRelation($relationName)
+	{
+		if ('Utente' == $relationName) {
+			return $this->initUtentes();
+		}
+	}
+
+	/**
+	 * Clears out the collUtentes collection
+	 *
+	 * This does not modify the database; however, it will remove any associated objects, causing
+	 * them to be refetched by subsequent calls to accessor method.
+	 *
+	 * @return     void
+	 * @see        addUtentes()
+	 */
+	public function clearUtentes()
+	{
+		$this->collUtentes = null; // important to set this to NULL since that means it is uninitialized
+	}
+
+	/**
+	 * Initializes the collUtentes collection.
+	 *
+	 * By default this just sets the collUtentes collection to an empty array (like clearcollUtentes());
+	 * however, you may wish to override this method in your stub class to provide setting appropriate
+	 * to your application -- for example, setting the initial array to the values stored in database.
+	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
+	 * @return     void
+	 */
+	public function initUtentes($overrideExisting = true)
+	{
+		if (null !== $this->collUtentes && !$overrideExisting) {
+			return;
+		}
+		$this->collUtentes = new PropelObjectCollection();
+		$this->collUtentes->setModel('Utente');
+	}
+
+	/**
+	 * Gets an array of Utente objects which contain a foreign key that references this object.
+	 *
+	 * If the $criteria is not null, it is used to always fetch the results from the database.
+	 * Otherwise the results are fetched from the database the first time, then cached.
+	 * Next time the same method is called without $criteria, the cached collection is returned.
+	 * If this Livelloutente is new, it will return
+	 * an empty collection or the current collection; the criteria is ignored on a new object.
+	 *
+	 * @param      Criteria $criteria optional Criteria object to narrow the query
+	 * @param      PropelPDO $con optional connection object
+	 * @return     PropelCollection|array Utente[] List of Utente objects
 	 * @throws     PropelException
 	 */
-	public function setUtente(Utente $v = null)
+	public function getUtentes($criteria = null, PropelPDO $con = null)
 	{
-		if ($v === null) {
-			$this->setIdutente(NULL);
-		} else {
-			$this->setIdutente($v->getId());
+		if(null === $this->collUtentes || null !== $criteria) {
+			if ($this->isNew() && null === $this->collUtentes) {
+				// return empty collection
+				$this->initUtentes();
+			} else {
+				$collUtentes = UtenteQuery::create(null, $criteria)
+					->filterByLivelloutente($this)
+					->find($con);
+				if (null !== $criteria) {
+					return $collUtentes;
+				}
+				$this->collUtentes = $collUtentes;
+			}
+		}
+		return $this->collUtentes;
+	}
+
+	/**
+	 * Sets a collection of Utente objects related by a one-to-many relationship
+	 * to the current object.
+	 * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+	 * and new objects from the given Propel collection.
+	 *
+	 * @param      PropelCollection $utentes A Propel collection.
+	 * @param      PropelPDO $con Optional connection object
+	 */
+	public function setUtentes(PropelCollection $utentes, PropelPDO $con = null)
+	{
+		$this->utentesScheduledForDeletion = $this->getUtentes(new Criteria(), $con)->diff($utentes);
+
+		foreach ($utentes as $utente) {
+			// Fix issue with collection modified by reference
+			if ($utente->isNew()) {
+				$utente->setLivelloutente($this);
+			}
+			$this->addUtente($utente);
 		}
 
-		$this->aUtente = $v;
+		$this->collUtentes = $utentes;
+	}
 
-		// Add binding for other direction of this n:n relationship.
-		// If this object has already been added to the Utente object, it will not be re-added.
-		if ($v !== null) {
-			$v->addLivelloutente($this);
+	/**
+	 * Returns the number of related Utente objects.
+	 *
+	 * @param      Criteria $criteria
+	 * @param      boolean $distinct
+	 * @param      PropelPDO $con
+	 * @return     int Count of related Utente objects.
+	 * @throws     PropelException
+	 */
+	public function countUtentes(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
+	{
+		if(null === $this->collUtentes || null !== $criteria) {
+			if ($this->isNew() && null === $this->collUtentes) {
+				return 0;
+			} else {
+				$query = UtenteQuery::create(null, $criteria);
+				if($distinct) {
+					$query->distinct();
+				}
+				return $query
+					->filterByLivelloutente($this)
+					->count($con);
+			}
+		} else {
+			return count($this->collUtentes);
+		}
+	}
+
+	/**
+	 * Method called to associate a Utente object to this object
+	 * through the Utente foreign key attribute.
+	 *
+	 * @param      Utente $l Utente
+	 * @return     Livelloutente The current object (for fluent API support)
+	 */
+	public function addUtente(Utente $l)
+	{
+		if ($this->collUtentes === null) {
+			$this->initUtentes();
+		}
+		if (!$this->collUtentes->contains($l)) { // only add it if the **same** object is not already associated
+			$this->doAddUtente($l);
 		}
 
 		return $this;
 	}
 
-
 	/**
-	 * Get the associated Utente object
-	 *
-	 * @param      PropelPDO Optional Connection object.
-	 * @return     Utente The associated Utente object.
-	 * @throws     PropelException
+	 * @param	Utente $utente The utente object to add.
 	 */
-	public function getUtente(PropelPDO $con = null)
+	protected function doAddUtente($utente)
 	{
-		if ($this->aUtente === null && ($this->idutente !== null)) {
-			$this->aUtente = UtenteQuery::create()->findPk($this->idutente, $con);
-			/* The following can be used additionally to
-				guarantee the related object contains a reference
-				to this object.  This level of coupling may, however, be
-				undesirable since it could result in an only partially populated collection
-				in the referenced object.
-				$this->aUtente->addLivelloutentes($this);
-			 */
-		}
-		return $this->aUtente;
+		$this->collUtentes[]= $utente;
+		$utente->setLivelloutente($this);
 	}
 
 	/**
@@ -883,7 +960,6 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 	public function clear()
 	{
 		$this->id = null;
-		$this->idutente = null;
 		$this->livello = null;
 		$this->alreadyInSave = false;
 		$this->alreadyInValidation = false;
@@ -905,9 +981,17 @@ abstract class BaseLivelloutente extends BaseObject  implements Persistent
 	public function clearAllReferences($deep = false)
 	{
 		if ($deep) {
+			if ($this->collUtentes) {
+				foreach ($this->collUtentes as $o) {
+					$o->clearAllReferences($deep);
+				}
+			}
 		} // if ($deep)
 
-		$this->aUtente = null;
+		if ($this->collUtentes instanceof PropelCollection) {
+			$this->collUtentes->clearIterator();
+		}
+		$this->collUtentes = null;
 	}
 
 	/**
