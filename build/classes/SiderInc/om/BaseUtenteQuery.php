@@ -9,22 +9,24 @@
  * @method     UtenteQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     UtenteQuery orderByUsername($order = Criteria::ASC) Order by the username column
  * @method     UtenteQuery orderByPassword($order = Criteria::ASC) Order by the password column
+ * @method     UtenteQuery orderByLivello($order = Criteria::ASC) Order by the livello column
  *
  * @method     UtenteQuery groupById() Group by the id column
  * @method     UtenteQuery groupByUsername() Group by the username column
  * @method     UtenteQuery groupByPassword() Group by the password column
+ * @method     UtenteQuery groupByLivello() Group by the livello column
  *
  * @method     UtenteQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     UtenteQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     UtenteQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
- * @method     UtenteQuery leftJoinDettaglioutente($relationAlias = null) Adds a LEFT JOIN clause to the query using the Dettaglioutente relation
- * @method     UtenteQuery rightJoinDettaglioutente($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Dettaglioutente relation
- * @method     UtenteQuery innerJoinDettaglioutente($relationAlias = null) Adds a INNER JOIN clause to the query using the Dettaglioutente relation
- *
  * @method     UtenteQuery leftJoinLivelloutente($relationAlias = null) Adds a LEFT JOIN clause to the query using the Livelloutente relation
  * @method     UtenteQuery rightJoinLivelloutente($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Livelloutente relation
  * @method     UtenteQuery innerJoinLivelloutente($relationAlias = null) Adds a INNER JOIN clause to the query using the Livelloutente relation
+ *
+ * @method     UtenteQuery leftJoinDettaglioutente($relationAlias = null) Adds a LEFT JOIN clause to the query using the Dettaglioutente relation
+ * @method     UtenteQuery rightJoinDettaglioutente($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Dettaglioutente relation
+ * @method     UtenteQuery innerJoinDettaglioutente($relationAlias = null) Adds a INNER JOIN clause to the query using the Dettaglioutente relation
  *
  * @method     Utente findOne(PropelPDO $con = null) Return the first Utente matching the query
  * @method     Utente findOneOrCreate(PropelPDO $con = null) Return the first Utente matching the query, or a new Utente object populated from the query conditions when no match is found
@@ -32,10 +34,12 @@
  * @method     Utente findOneById(int $id) Return the first Utente filtered by the id column
  * @method     Utente findOneByUsername(string $username) Return the first Utente filtered by the username column
  * @method     Utente findOneByPassword(string $password) Return the first Utente filtered by the password column
+ * @method     Utente findOneByLivello(int $livello) Return the first Utente filtered by the livello column
  *
  * @method     array findById(int $id) Return Utente objects filtered by the id column
  * @method     array findByUsername(string $username) Return Utente objects filtered by the username column
  * @method     array findByPassword(string $password) Return Utente objects filtered by the password column
+ * @method     array findByLivello(int $livello) Return Utente objects filtered by the livello column
  *
  * @package    propel.generator.SiderInc.om
  */
@@ -124,7 +128,7 @@ abstract class BaseUtenteQuery extends ModelCriteria
 	 */
 	protected function findPkSimple($key, $con)
 	{
-		$sql = 'SELECT `ID`, `USERNAME`, `PASSWORD` FROM `Utente` WHERE `ID` = :p0';
+		$sql = 'SELECT `ID`, `USERNAME`, `PASSWORD`, `LIVELLO` FROM `Utente` WHERE `ID` = :p0';
 		try {
 			$stmt = $con->prepare($sql);
 			$stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -292,6 +296,122 @@ abstract class BaseUtenteQuery extends ModelCriteria
 	}
 
 	/**
+	 * Filter the query on the livello column
+	 *
+	 * Example usage:
+	 * <code>
+	 * $query->filterByLivello(1234); // WHERE livello = 1234
+	 * $query->filterByLivello(array(12, 34)); // WHERE livello IN (12, 34)
+	 * $query->filterByLivello(array('min' => 12)); // WHERE livello > 12
+	 * </code>
+	 *
+	 * @see       filterByLivelloutente()
+	 *
+	 * @param     mixed $livello The value to use as filter.
+	 *              Use scalar values for equality.
+	 *              Use array values for in_array() equivalent.
+	 *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+	 *
+	 * @return    UtenteQuery The current query, for fluid interface
+	 */
+	public function filterByLivello($livello = null, $comparison = null)
+	{
+		if (is_array($livello)) {
+			$useMinMax = false;
+			if (isset($livello['min'])) {
+				$this->addUsingAlias(UtentePeer::LIVELLO, $livello['min'], Criteria::GREATER_EQUAL);
+				$useMinMax = true;
+			}
+			if (isset($livello['max'])) {
+				$this->addUsingAlias(UtentePeer::LIVELLO, $livello['max'], Criteria::LESS_EQUAL);
+				$useMinMax = true;
+			}
+			if ($useMinMax) {
+				return $this;
+			}
+			if (null === $comparison) {
+				$comparison = Criteria::IN;
+			}
+		}
+		return $this->addUsingAlias(UtentePeer::LIVELLO, $livello, $comparison);
+	}
+
+	/**
+	 * Filter the query by a related Livelloutente object
+	 *
+	 * @param     Livelloutente|PropelCollection $livelloutente The related object(s) to use as filter
+	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+	 *
+	 * @return    UtenteQuery The current query, for fluid interface
+	 */
+	public function filterByLivelloutente($livelloutente, $comparison = null)
+	{
+		if ($livelloutente instanceof Livelloutente) {
+			return $this
+				->addUsingAlias(UtentePeer::LIVELLO, $livelloutente->getId(), $comparison);
+		} elseif ($livelloutente instanceof PropelCollection) {
+			if (null === $comparison) {
+				$comparison = Criteria::IN;
+			}
+			return $this
+				->addUsingAlias(UtentePeer::LIVELLO, $livelloutente->toKeyValue('PrimaryKey', 'Id'), $comparison);
+		} else {
+			throw new PropelException('filterByLivelloutente() only accepts arguments of type Livelloutente or PropelCollection');
+		}
+	}
+
+	/**
+	 * Adds a JOIN clause to the query using the Livelloutente relation
+	 *
+	 * @param     string $relationAlias optional alias for the relation
+	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+	 *
+	 * @return    UtenteQuery The current query, for fluid interface
+	 */
+	public function joinLivelloutente($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+	{
+		$tableMap = $this->getTableMap();
+		$relationMap = $tableMap->getRelation('Livelloutente');
+
+		// create a ModelJoin object for this join
+		$join = new ModelJoin();
+		$join->setJoinType($joinType);
+		$join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+		if ($previousJoin = $this->getPreviousJoin()) {
+			$join->setPreviousJoin($previousJoin);
+		}
+
+		// add the ModelJoin to the current object
+		if($relationAlias) {
+			$this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+			$this->addJoinObject($join, $relationAlias);
+		} else {
+			$this->addJoinObject($join, 'Livelloutente');
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Use the Livelloutente relation Livelloutente object
+	 *
+	 * @see       useQuery()
+	 *
+	 * @param     string $relationAlias optional alias for the relation,
+	 *                                   to be used as main alias in the secondary query
+	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+	 *
+	 * @return    LivelloutenteQuery A secondary query class using the current class as primary query
+	 */
+	public function useLivelloutenteQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+	{
+		return $this
+			->joinLivelloutente($relationAlias, $joinType)
+			->useQuery($relationAlias ? $relationAlias : 'Livelloutente', 'LivelloutenteQuery');
+	}
+
+	/**
 	 * Filter the query by a related Dettaglioutente object
 	 *
 	 * @param     Dettaglioutente $dettaglioutente  the related object to use as filter
@@ -362,79 +482,6 @@ abstract class BaseUtenteQuery extends ModelCriteria
 		return $this
 			->joinDettaglioutente($relationAlias, $joinType)
 			->useQuery($relationAlias ? $relationAlias : 'Dettaglioutente', 'DettaglioutenteQuery');
-	}
-
-	/**
-	 * Filter the query by a related Livelloutente object
-	 *
-	 * @param     Livelloutente $livelloutente  the related object to use as filter
-	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-	 *
-	 * @return    UtenteQuery The current query, for fluid interface
-	 */
-	public function filterByLivelloutente($livelloutente, $comparison = null)
-	{
-		if ($livelloutente instanceof Livelloutente) {
-			return $this
-				->addUsingAlias(UtentePeer::ID, $livelloutente->getIdutente(), $comparison);
-		} elseif ($livelloutente instanceof PropelCollection) {
-			return $this
-				->useLivelloutenteQuery()
-				->filterByPrimaryKeys($livelloutente->getPrimaryKeys())
-				->endUse();
-		} else {
-			throw new PropelException('filterByLivelloutente() only accepts arguments of type Livelloutente or PropelCollection');
-		}
-	}
-
-	/**
-	 * Adds a JOIN clause to the query using the Livelloutente relation
-	 *
-	 * @param     string $relationAlias optional alias for the relation
-	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
-	 *
-	 * @return    UtenteQuery The current query, for fluid interface
-	 */
-	public function joinLivelloutente($relationAlias = null, $joinType = Criteria::INNER_JOIN)
-	{
-		$tableMap = $this->getTableMap();
-		$relationMap = $tableMap->getRelation('Livelloutente');
-
-		// create a ModelJoin object for this join
-		$join = new ModelJoin();
-		$join->setJoinType($joinType);
-		$join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
-		if ($previousJoin = $this->getPreviousJoin()) {
-			$join->setPreviousJoin($previousJoin);
-		}
-
-		// add the ModelJoin to the current object
-		if($relationAlias) {
-			$this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
-			$this->addJoinObject($join, $relationAlias);
-		} else {
-			$this->addJoinObject($join, 'Livelloutente');
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Use the Livelloutente relation Livelloutente object
-	 *
-	 * @see       useQuery()
-	 *
-	 * @param     string $relationAlias optional alias for the relation,
-	 *                                   to be used as main alias in the secondary query
-	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
-	 *
-	 * @return    LivelloutenteQuery A secondary query class using the current class as primary query
-	 */
-	public function useLivelloutenteQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
-	{
-		return $this
-			->joinLivelloutente($relationAlias, $joinType)
-			->useQuery($relationAlias ? $relationAlias : 'Livelloutente', 'LivelloutenteQuery');
 	}
 
 	/**

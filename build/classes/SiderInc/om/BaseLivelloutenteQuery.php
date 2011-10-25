@@ -7,11 +7,9 @@
  * 
  *
  * @method     LivelloutenteQuery orderById($order = Criteria::ASC) Order by the id column
- * @method     LivelloutenteQuery orderByIdutente($order = Criteria::ASC) Order by the idUtente column
  * @method     LivelloutenteQuery orderByLivello($order = Criteria::ASC) Order by the livello column
  *
  * @method     LivelloutenteQuery groupById() Group by the id column
- * @method     LivelloutenteQuery groupByIdutente() Group by the idUtente column
  * @method     LivelloutenteQuery groupByLivello() Group by the livello column
  *
  * @method     LivelloutenteQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
@@ -26,11 +24,9 @@
  * @method     Livelloutente findOneOrCreate(PropelPDO $con = null) Return the first Livelloutente matching the query, or a new Livelloutente object populated from the query conditions when no match is found
  *
  * @method     Livelloutente findOneById(int $id) Return the first Livelloutente filtered by the id column
- * @method     Livelloutente findOneByIdutente(int $idUtente) Return the first Livelloutente filtered by the idUtente column
  * @method     Livelloutente findOneByLivello(string $livello) Return the first Livelloutente filtered by the livello column
  *
  * @method     array findById(int $id) Return Livelloutente objects filtered by the id column
- * @method     array findByIdutente(int $idUtente) Return Livelloutente objects filtered by the idUtente column
  * @method     array findByLivello(string $livello) Return Livelloutente objects filtered by the livello column
  *
  * @package    propel.generator.SiderInc.om
@@ -120,7 +116,7 @@ abstract class BaseLivelloutenteQuery extends ModelCriteria
 	 */
 	protected function findPkSimple($key, $con)
 	{
-		$sql = 'SELECT `ID`, `IDUTENTE`, `LIVELLO` FROM `LivelloUtente` WHERE `ID` = :p0';
+		$sql = 'SELECT `ID`, `LIVELLO` FROM `LivelloUtente` WHERE `ID` = :p0';
 		try {
 			$stmt = $con->prepare($sql);
 			$stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -232,48 +228,6 @@ abstract class BaseLivelloutenteQuery extends ModelCriteria
 	}
 
 	/**
-	 * Filter the query on the idUtente column
-	 *
-	 * Example usage:
-	 * <code>
-	 * $query->filterByIdutente(1234); // WHERE idUtente = 1234
-	 * $query->filterByIdutente(array(12, 34)); // WHERE idUtente IN (12, 34)
-	 * $query->filterByIdutente(array('min' => 12)); // WHERE idUtente > 12
-	 * </code>
-	 *
-	 * @see       filterByUtente()
-	 *
-	 * @param     mixed $idutente The value to use as filter.
-	 *              Use scalar values for equality.
-	 *              Use array values for in_array() equivalent.
-	 *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
-	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-	 *
-	 * @return    LivelloutenteQuery The current query, for fluid interface
-	 */
-	public function filterByIdutente($idutente = null, $comparison = null)
-	{
-		if (is_array($idutente)) {
-			$useMinMax = false;
-			if (isset($idutente['min'])) {
-				$this->addUsingAlias(LivelloutentePeer::IDUTENTE, $idutente['min'], Criteria::GREATER_EQUAL);
-				$useMinMax = true;
-			}
-			if (isset($idutente['max'])) {
-				$this->addUsingAlias(LivelloutentePeer::IDUTENTE, $idutente['max'], Criteria::LESS_EQUAL);
-				$useMinMax = true;
-			}
-			if ($useMinMax) {
-				return $this;
-			}
-			if (null === $comparison) {
-				$comparison = Criteria::IN;
-			}
-		}
-		return $this->addUsingAlias(LivelloutentePeer::IDUTENTE, $idutente, $comparison);
-	}
-
-	/**
 	 * Filter the query on the livello column
 	 *
 	 * Example usage:
@@ -304,7 +258,7 @@ abstract class BaseLivelloutenteQuery extends ModelCriteria
 	/**
 	 * Filter the query by a related Utente object
 	 *
-	 * @param     Utente|PropelCollection $utente The related object(s) to use as filter
+	 * @param     Utente $utente  the related object to use as filter
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    LivelloutenteQuery The current query, for fluid interface
@@ -313,13 +267,12 @@ abstract class BaseLivelloutenteQuery extends ModelCriteria
 	{
 		if ($utente instanceof Utente) {
 			return $this
-				->addUsingAlias(LivelloutentePeer::IDUTENTE, $utente->getId(), $comparison);
+				->addUsingAlias(LivelloutentePeer::ID, $utente->getLivello(), $comparison);
 		} elseif ($utente instanceof PropelCollection) {
-			if (null === $comparison) {
-				$comparison = Criteria::IN;
-			}
 			return $this
-				->addUsingAlias(LivelloutentePeer::IDUTENTE, $utente->toKeyValue('PrimaryKey', 'Id'), $comparison);
+				->useUtenteQuery()
+				->filterByPrimaryKeys($utente->getPrimaryKeys())
+				->endUse();
 		} else {
 			throw new PropelException('filterByUtente() only accepts arguments of type Utente or PropelCollection');
 		}
@@ -333,7 +286,7 @@ abstract class BaseLivelloutenteQuery extends ModelCriteria
 	 *
 	 * @return    LivelloutenteQuery The current query, for fluid interface
 	 */
-	public function joinUtente($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+	public function joinUtente($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
 	{
 		$tableMap = $this->getTableMap();
 		$relationMap = $tableMap->getRelation('Utente');
@@ -368,7 +321,7 @@ abstract class BaseLivelloutenteQuery extends ModelCriteria
 	 *
 	 * @return    UtenteQuery A secondary query class using the current class as primary query
 	 */
-	public function useUtenteQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+	public function useUtenteQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
 	{
 		return $this
 			->joinUtente($relationAlias, $joinType)
